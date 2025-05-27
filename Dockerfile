@@ -1,5 +1,5 @@
-# Use Debian-based image for building native modules
-FROM node:20-bullseye AS development
+# Use Node.js 16 for better ffi-napi compatibility
+FROM node:16-bullseye AS development
 
 WORKDIR /usr/src/app
 
@@ -12,14 +12,13 @@ RUN apt-get update && apt-get install -y \
 
 COPY package*.json ./
 
-# Install all dependencies
 RUN npm ci && npm cache clean --force
 
 ###################
 # BUILD FOR PRODUCTION
 ###################
 
-FROM node:20-alpine AS build
+FROM node:16-alpine AS build
 
 WORKDIR /usr/src/app
 
