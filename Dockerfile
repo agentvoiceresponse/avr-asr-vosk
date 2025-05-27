@@ -1,16 +1,25 @@
-FROM node:20-alpine As development
+# Use Debian-based image for building native modules
+FROM node:20-bullseye AS development
 
 WORKDIR /usr/src/app
 
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY package*.json ./
 
-RUN npm ci --omit=dev && npm cache clean --force
+# Install all dependencies
+RUN npm ci && npm cache clean --force
 
 ###################
 # BUILD FOR PRODUCTION
 ###################
 
-FROM node:20-alpine As build
+FROM node:20-alpine AS build
 
 WORKDIR /usr/src/app
 
